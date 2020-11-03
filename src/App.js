@@ -39,7 +39,7 @@ function App() {
   const [password, setPassword] = useState('');
 
   useEffect(() => {
-    auth.onAuthStateChanged
+    //
   }, []);
 
   //getting posts from firebase
