@@ -34,13 +34,30 @@ function App() {
 
   const [posts, setPosts] = useState([]);
   const [open, setOpen] = useState(false);
+  const [openSignIn, setOpenSignIn] = useState(false);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [user, setUser] = useState(null);
 
+  // listen to authentication change
   useEffect(() => {
-    //
-  }, []);
+    const unsubscribe = auth.onAuthStateChanged((authUser) => {
+      if (authUser) {
+        // user has logged in...
+        console.log(authUser);
+        setUser(authUser);
+      } else {
+        //user has logged out...
+        setUser(null);
+      }
+    });
+
+    return () => {
+      //perform some 🔃
+      unsubscribe();
+    };
+  }, [user, username]);
 
   //getting posts from firebase
   useEffect(() => {
@@ -58,7 +75,24 @@ function App() {
     e.preventDefault();
     auth
       .createUserWithEmailAndPassword(email, password)
+      .then((authUser) => {
+        return authUser.user.updateProfile({
+          displayName: username,
+        });
+      })
       .catch((err) => alert(err.message));
+    setOpen(false);
+    setEmail('');
+    setPassword('');
+    setUsername('');
+  };
+
+  const signIn = (e) => {
+    e.preventDefault();
+    auth
+      .signInWithEmailAndPassword(email, password)
+      .catch((err) => alert(err.message));
+    setOpenSignIn(false);
   };
 
   return (
@@ -99,6 +133,37 @@ function App() {
           </form>
         </div>
       </Modal>
+
+      <Modal open={openSignIn} onClose={() => setOpenSignIn(false)}>
+        <div style={modalStyle} className={classes.paper}>
+          <form className="app__signUp">
+            <center>
+              <img
+                className="app__headerImage"
+                src="https://dewey.tailorbrands.com/production/brand_version_mockup_image/839/4037480839_98239a3f-c15c-4473-883c-7dcf3b4b7b79.png?cb=1604238923"
+                alt="logo"
+              />
+            </center>
+
+            <Input
+              placeholder="email"
+              type="text"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <Input
+              placeholder="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <Button onClick={signIn}>Sign In</Button>
+          </form>
+        </div>
+      </Modal>
+
       <div className="app__header">
         <img
           className="app__headerImage"
@@ -106,7 +171,15 @@ function App() {
           alt="logo"
         />
       </div>
-      <Button onClick={() => setOpen(true)}>Signup</Button>
+
+      {user ? (
+        <Button onClick={() => auth.signOut()}>Logout</Button>
+      ) : (
+        <div className="app__loginContainer">
+          <Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
+          <Button onClick={() => setOpen(true)}>Sign up</Button>
+        </div>
+      )}
 
       {posts.map(({ id, post }) => (
         <Post
