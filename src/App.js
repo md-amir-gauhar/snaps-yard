@@ -5,6 +5,7 @@ import { db, auth } from './firebase';
 import Modal from '@material-ui/core/Modal';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button, Input } from '@material-ui/core';
+import ImageUpload from './ImageUpload';
 
 function getModalStyle() {
   const top = 50;
@@ -93,10 +94,18 @@ function App() {
       .signInWithEmailAndPassword(email, password)
       .catch((err) => alert(err.message));
     setOpenSignIn(false);
+    setPassword('');
+    setUsername('');
   };
 
   return (
     <div className="app">
+      {user?.displayName ? (
+        <ImageUpload username={user.displayName} />
+      ) : (
+        <h3>Sorry, you need to Login to upload</h3>
+      )}
+
       <Modal open={open} onClose={() => setOpen(false)}>
         <div style={modalStyle} className={classes.paper}>
           <form className="app__signUp">
@@ -170,16 +179,22 @@ function App() {
           src="https://dewey.tailorbrands.com/production/brand_version_mockup_image/839/4037480839_98239a3f-c15c-4473-883c-7dcf3b4b7b79.png?cb=1604238923"
           alt="logo"
         />
-      </div>
 
-      {user ? (
-        <Button onClick={() => auth.signOut()}>Logout</Button>
-      ) : (
-        <div className="app__loginContainer">
-          <Button onClick={() => setOpenSignIn(true)}>Sign In</Button>
-          <Button onClick={() => setOpen(true)}>Sign up</Button>
-        </div>
-      )}
+        {user ? (
+          <Button className="btn" onClick={() => auth.signOut()}>
+            Logout
+          </Button>
+        ) : (
+          <div className="app__loginContainer">
+            <Button className="btn" onClick={() => setOpenSignIn(true)}>
+              Sign In
+            </Button>
+            <Button className="btn" onClick={() => setOpen(true)}>
+              Sign up
+            </Button>
+          </div>
+        )}
+      </div>
 
       {posts.map(({ id, post }) => (
         <Post
