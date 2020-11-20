@@ -29,3 +29,13 @@
   border: 1px solid lightgray !important;
   background-color: white !important;
 }
+
+.app__logoutContainer {
+  display: flex;
+  align-items: center;
+}
+
+.app__buttonContainer {
+  display: flex;
+  align-items: center;
+}
