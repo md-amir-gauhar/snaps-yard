@@ -22,6 +22,9 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     position: 'absolute',
     width: 400,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: theme.palette.background.paper,
     border: '2px solid #000',
     boxShadow: theme.shadows[5],
@@ -91,7 +94,7 @@ function ImageUpload({ username }) {
                 alt="logo"
               />
             </center>
-            <progress value={progress} max="100" />
+            <progress style={{width: '100%'}} value={progress} max="100" />
             <Input
               type="text"
               placeholder="Enter a caption..."
